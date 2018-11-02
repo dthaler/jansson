@@ -37,7 +37,7 @@
 #include <sys/types.h>
 #endif
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(USE_SGX)
 /* For GetModuleHandle(), GetProcAddress() and GetCurrentProcessId() */
 #include <windows.h>
 #endif
@@ -141,6 +141,7 @@ static int seed_from_windows_cryptoapi(uint32_t *seed)
 }
 #endif
 
+#ifndef USE_SGX
 /* gettimeofday() and getpid() */
 static int seed_from_timestamp_and_pid(uint32_t *seed) {
 #ifdef HAVE_GETTIMEOFDAY
@@ -154,7 +155,7 @@ static int seed_from_timestamp_and_pid(uint32_t *seed) {
 #endif
 
     /* XOR with PID for more randomness */
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(USE_SGX)
     *seed ^= (uint32_t)GetCurrentProcessId();
 #elif defined(HAVE_GETPID)
     *seed ^= (uint32_t)getpid();
@@ -162,6 +163,7 @@ static int seed_from_timestamp_and_pid(uint32_t *seed) {
 
     return 0;
 }
+#endif // !USE_SGX
 
 static uint32_t generate_seed() {
     uint32_t seed = 0;
@@ -177,11 +179,18 @@ static uint32_t generate_seed() {
         done = 1;
 #endif
 
+#if defined(USE_SGX)
+    if (sgx_read_rand((unsigned char*)&seed, sizeof(seed)) == SGX_SUCCESS) {
+        done = 1;
+    }
+#else
+    /* TODO: support the following from SGX */
     if (!done) {
         /* Fall back to timestamp and PID if no better randomness is
            available */
         seed_from_timestamp_and_pid(&seed);
     }
+#endif
 
     /* Make sure the seed is never zero */
     if (seed == 0)
@@ -242,7 +251,7 @@ void json_object_seed(size_t seed) {
         } while(hashtable_seed == 0);
     }
 }
-#elif defined(_WIN32)
+#elif defined(_WIN32) && !defined(USE_SGX)
 static long seed_initialized = 0;
 void json_object_seed(size_t seed) {
     uint32_t new_seed = (uint32_t)seed;
