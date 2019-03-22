@@ -52,15 +52,5 @@
 
 #define INITIAL_HASHTABLE_ORDER 3
 
-#ifdef USE_SGX
-/****************** SGX defines ***************/
-#include <stdlib.h>
-#include <sgx.h>
-#include <sgx_trts.h>
-#include <sgx_tprotected_fs.h>
-#define FILE SGX_FILE
-#define fwrite sgx_fwrite
-#define fopen  sgx_fopen_auto_key
-#define fclose sgx_fclose
-#define stdin NULL
-#endif
+#include <openenclave/enclave.h>
+#include <openenclave/bits/stdio.h>
