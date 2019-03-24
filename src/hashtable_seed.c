@@ -37,7 +37,7 @@
 #include <sys/types.h>
 #endif
 
-#if defined(_WIN32) && !defined(OE_USE_SGX)
+#if defined(_WIN32) && !defined(_OE_ENCLAVE_H)
 /* For GetModuleHandle(), GetProcAddress() and GetCurrentProcessId() */
 #include <windows.h>
 #endif
@@ -141,7 +141,7 @@ static int seed_from_windows_cryptoapi(uint32_t *seed)
 }
 #endif
 
-#ifndef OE_USE_SGX
+#ifndef _OE_ENCLAVE_H
 /* gettimeofday() and getpid() */
 static int seed_from_timestamp_and_pid(uint32_t *seed) {
 #ifdef HAVE_GETTIMEOFDAY
@@ -155,7 +155,7 @@ static int seed_from_timestamp_and_pid(uint32_t *seed) {
 #endif
 
     /* XOR with PID for more randomness */
-#if defined(_WIN32) && !defined(OE_USE_SGX)
+#if defined(_WIN32) && !defined(_OE_ENCLAVE_H)
     *seed ^= (uint32_t)GetCurrentProcessId();
 #elif defined(HAVE_GETPID)
     *seed ^= (uint32_t)getpid();
@@ -163,7 +163,7 @@ static int seed_from_timestamp_and_pid(uint32_t *seed) {
 
     return 0;
 }
-#endif // !OE_USE_SGX
+#endif // !_OE_ENCLAVE_H
 
 static uint32_t generate_seed() {
     uint32_t seed = 0;
@@ -179,7 +179,7 @@ static uint32_t generate_seed() {
         done = 1;
 #endif
 
-#if defined(OE_USE_SGX)
+#if defined(_OE_ENCLAVE_H)
     if (oe_random((unsigned char*)&seed, sizeof(seed)) == OE_OK) {
         done = 1;
     }
@@ -251,7 +251,7 @@ void json_object_seed(size_t seed) {
         } while(hashtable_seed == 0);
     }
 }
-#elif defined(_WIN32) && !defined(OE_USE_SGX)
+#elif defined(_WIN32) && !defined(_OE_ENCLAVE_H)
 static long seed_initialized = 0;
 void json_object_seed(size_t seed) {
     uint32_t new_seed = (uint32_t)seed;

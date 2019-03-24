@@ -1005,7 +1005,7 @@ json_t *json_loadb(const char *buffer, size_t buflen, size_t flags, json_error_t
     return result;
 }
 
-#ifndef OE_USE_SGX
+#ifndef _OE_ENCLAVE_H
 json_t *json_loadf(FILE *input, size_t flags, json_error_t *error)
 {
     lex_t lex;
@@ -1073,7 +1073,7 @@ json_t *json_loadfd(int input, size_t flags, json_error_t *error)
     return result;
 }
 
-#ifndef OE_USE_SGX
+#ifndef _OE_ENCLAVE_H
 json_t *json_load_file(const char *path, size_t flags, json_error_t *error)
 {
     json_t *result;
