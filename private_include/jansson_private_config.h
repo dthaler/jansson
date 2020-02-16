@@ -1,10 +1,10 @@
-#undef HAVE_ENDIAN_H
-#undef HAVE_FCNTL_H
+#define HAVE_ENDIAN_H
+#define HAVE_FCNTL_H
 #undef HAVE_SCHED_H
-#undef HAVE_UNISTD_H
-#undef HAVE_SYS_PARAM_H
-#undef HAVE_SYS_STAT_H
-#undef HAVE_SYS_TIME_H 
+#define HAVE_UNISTD_H
+#define HAVE_SYS_PARAM_H
+#define HAVE_SYS_STAT_H
+#define HAVE_SYS_TIME_H 
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_STDINT_H 1
 
@@ -53,4 +53,3 @@
 #define INITIAL_HASHTABLE_ORDER 3
 
 #include <openenclave/enclave.h>
-#include <openenclave/bits/stdio.h>
